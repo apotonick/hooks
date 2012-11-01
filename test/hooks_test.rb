@@ -87,6 +87,15 @@ class HooksTest < Test::Unit::TestCase
         @mum.run_hook(:after_eight)
         assert_equal [:c], @mum.executed
       end
+
+      should "return callback results in order" do
+        @mum.class.after_eight { :dinner_out }
+        @mum.class.after_eight { :party_hard }
+        @mum.class.after_eight { :taxi_home }
+
+        results = @mum.run_hook(:after_eight)
+        assert_equal [:dinner_out, :party_hard, :taxi_home], results
+      end
     end
     
     context "in class context" do
@@ -141,7 +150,7 @@ class HooksTest < Test::Unit::TestCase
         end
       end.new
       
-      assert_equal [:take_shower, :have_dinner], @kid.run_hook(:after_eight)
+      assert_equal [:take_shower, :have_dinner], @kid.class.callbacks_for_hook(:after_eight)
     end
   end
 end

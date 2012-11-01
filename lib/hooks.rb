@@ -47,7 +47,7 @@ module Hooks
     end    
     
     def run_hook_for(name, scope, *args)
-      callbacks_for_hook(name).each do |callback|
+      callbacks_for_hook(name).map do |callback|
         if callback.kind_of? Symbol
           scope.send(callback, *args)
         else
