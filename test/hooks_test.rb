@@ -1,156 +1,152 @@
 require 'test_helper'
 
-class HooksTest < Test::Unit::TestCase
+class HooksTest < MiniTest::Spec
   class TestClass
     include Hooks
-    
+
     def executed
       @executed ||= [];
     end
   end
-  
-  
-  context "Hooks.define_hook" do
-    setup do
-      @klass = Class.new(TestClass)
-      
-      @mum = @klass.new
-      @mum.class.define_hook :after_eight
-    end
-    
-    should "provide accessors to the stored callbacks" do
-      assert_equal [], @klass._after_eight_callbacks
-      @klass._after_eight_callbacks << :dine
-      assert_equal [:dine], @klass._after_eight_callbacks
-    end
-    
-    should "respond to Class.callbacks_for_hook" do
-      assert_equal [], @klass.callbacks_for_hook(:after_eight)
-      @klass.after_eight :dine
-      assert_equal [:dine], @klass.callbacks_for_hook(:after_eight)
+
+
+  describe "Hooks.define_hook" do
+    let (:klass) {
+      Class.new(TestClass) do
+        define_hook :after_eight
+      end
+
+    }
+    subject { klass.new }
+
+    it "provide accessors to the stored callbacks" do
+      assert_equal [], klass._after_eight_callbacks
+      klass._after_eight_callbacks << :dine
+      assert_equal [:dine], klass._after_eight_callbacks
     end
 
-    should "accept multiple hook names" do
-      @mum.class.define_hooks :before_ten, :after_ten
-      assert_equal [], @klass.callbacks_for_hook(:before_ten)
-      assert_equal [], @klass.callbacks_for_hook(:after_ten)
+    it "respond to Class.callbacks_for_hook" do
+      assert_equal [], klass.callbacks_for_hook(:after_eight)
+      klass.after_eight :dine
+      assert_equal [:dine], klass.callbacks_for_hook(:after_eight)
     end
-  
-    context "creates a public writer for the hook that" do
-      should "accepts method names" do
-        @klass.after_eight :dine
-        assert_equal [:dine], @klass._after_eight_callbacks
+
+    it "accept multiple hook names" do
+      subject.class.define_hooks :before_ten, :after_ten
+      assert_equal [], klass.callbacks_for_hook(:before_ten)
+      assert_equal [], klass.callbacks_for_hook(:after_ten)
+    end
+
+    describe "creates a public writer for the hook that" do
+      it "accepts method names" do
+        klass.after_eight :dine
+        assert_equal [:dine], klass._after_eight_callbacks
       end
-      
-      should "accepts blocks" do
-        @klass.after_eight do true; end
-        assert @klass._after_eight_callbacks.first.kind_of? Proc
+
+      it "accepts blocks" do
+        klass.after_eight do true; end
+        assert klass._after_eight_callbacks.first.kind_of? Proc
       end
-      
-      should "be inherited" do
-        @klass.after_eight :dine
-        subklass = Class.new(@klass)
-        
+
+      it "be inherited" do
+        klass.after_eight :dine
+        subklass = Class.new(klass)
+
         assert_equal [:dine], subklass._after_eight_callbacks
       end
     end
-    
-    context "Hooks#run_hook" do
-      should "run without parameters" do
-        @mum.instance_eval do
+
+    describe "Hooks#run_hook" do
+      it "run without parameters" do
+        subject.instance_eval do
           def a; executed << :a; nil; end
           def b; executed << :b; end
-          
+
           self.class.after_eight :b
           self.class.after_eight :a
         end
-        
-        @mum.run_hook(:after_eight)
-        
-        assert_equal [:b, :a], @mum.executed
+
+        subject.run_hook(:after_eight)
+
+        assert_equal [:b, :a], subject.executed
       end
-      
-      should "accept arbitrary parameters" do
-        @mum.instance_eval do
+
+      it "accept arbitrary parameters" do
+        subject.instance_eval do
           def a(me, arg); executed << arg+1; end
         end
-        @mum.class.after_eight :a
-        @mum.class.after_eight lambda { |me, arg| me.executed << arg-1 }
-        
-        @mum.run_hook(:after_eight, @mum, 1)
-        
-        assert_equal [2, 0], @mum.executed
+        subject.class.after_eight :a
+        subject.class.after_eight lambda { |me, arg| me.executed << arg-1 }
+
+        subject.run_hook(:after_eight, subject, 1)
+
+        assert_equal [2, 0], subject.executed
       end
 
-      should "execute block callbacks in instance context" do
-        @mum.class.after_eight { executed << :c }
-        @mum.run_hook(:after_eight)
-        assert_equal [:c], @mum.executed
+      it "execute block callbacks in instance context" do
+        subject.class.after_eight { executed << :c }
+        subject.run_hook(:after_eight)
+        assert_equal [:c], subject.executed
       end
 
-      should "return callback results in order" do
-        @mum.class.after_eight { :dinner_out }
-        @mum.class.after_eight { :party_hard }
-        @mum.class.after_eight { :taxi_home }
+      it "return callback results in order" do
+        subject.class.after_eight { :dinner_out }
+        subject.class.after_eight { :party_hard }
+        subject.class.after_eight { :taxi_home }
 
-        results = @mum.run_hook(:after_eight)
+        results = subject.run_hook(:after_eight)
         assert_equal [:dinner_out, :party_hard, :taxi_home], results
       end
     end
-    
-    context "in class context" do
-      should "run a callback block" do
+
+    describe "in class context" do
+      it "run a callback block" do
         executed = []
-        @klass.after_eight do
+        klass.after_eight do
           executed << :klass
         end
-        @klass.run_hook :after_eight
-        
+        klass.run_hook :after_eight
+
         assert_equal [:klass], executed
       end
-      
-      should "run a class methods" do
+
+      it "run a class methods" do
         executed = []
-        @klass.instance_eval do
+        klass.instance_eval do
           after_eight :have_dinner
-          
+
           def have_dinner(executed)
             executed << :have_dinner
           end
         end
-        @klass.run_hook :after_eight, executed
-        
+        klass.run_hook :after_eight, executed
+
         assert_equal [:have_dinner], executed
       end
     end
   end
-  
-  context "Deriving" do
-    setup do
-      @klass = Class.new(TestClass)
-      
-      @mum = @klass.new
-      @mum.class.define_hook :after_eight
-    end
-    
-    should "inherit the hook" do
-      @klass.class_eval do
+
+  describe "Inheritance" do
+    let (:klass) {
+      Class.new(TestClass) do
+        define_hook :after_eight
+
         after_eight :take_shower
-        
+
         def take_shower
           executed << :take_shower
         end
       end
-      
-      @kid = Class.new(@klass) do
+    }
+
+    it "inherits the hook" do
+      Class.new(klass) do
         after_eight :have_dinner
-        
+
         def have_dinner
           executed << :have_dinner
         end
-      end.new
-      
-      assert_equal [:take_shower, :have_dinner], @kid.class.callbacks_for_hook(:after_eight)
+      end.new.class.callbacks_for_hook(:after_eight).must_equal [:take_shower, :have_dinner]
     end
   end
 end

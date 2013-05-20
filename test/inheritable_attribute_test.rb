@@ -1,53 +1,51 @@
 require 'test_helper'
 
-class HooksTest < Test::Unit::TestCase
-  context "Hooks.define_hook" do
-    setup do
-      @klass = Class.new(Object) do
+class HooksTest < MiniTest::Spec
+  describe "Hooks.define_hook" do
+    subject {
+      Class.new(Object) do
         extend Hooks::InheritableAttribute
+        inheritable_attr :drinks
       end
-      
-      @mum = @klass.new
-      @klass.inheritable_attr :drinks
+    }
+
+    it "provides a reader with empty inherited attributes, already" do
+      assert_equal nil, subject.drinks
     end
-    
-    should "provide a reader with empty inherited attributes, already" do
-      assert_equal nil, @klass.drinks
+
+    it "provides a reader with empty inherited attributes in a derived class" do
+      assert_equal nil, Class.new(subject).drinks
+      #subject.drinks = true
+      #Class.new(subject).drinks # TODO: crashes.
     end
-    
-    should "provide a reader with empty inherited attributes in a derived class" do
-      assert_equal nil, Class.new(@klass).drinks
-      #@klass.drinks = true
-      #Class.new(@klass).drinks # TODO: crashes.
+
+    it "provides an attribute copy in subclasses" do
+      subject.drinks = []
+      assert subject.drinks.object_id != Class.new(subject).drinks.object_id
     end
-    
-    should "provide an attribute copy in subclasses" do
-      @klass.drinks = []
-      assert @klass.drinks.object_id != Class.new(@klass).drinks.object_id
+
+    it "provides a writer" do
+      subject.drinks = [:cabernet]
+      assert_equal [:cabernet], subject.drinks
     end
-    
-    should "provide a writer" do
-      @klass.drinks = [:cabernet]
-      assert_equal [:cabernet], @klass.drinks
-    end
-    
-    should "inherit attributes" do
-      @klass.drinks = [:cabernet]
-      
-      subklass_a = Class.new(@klass)
+
+    it "inherits attributes" do
+      subject.drinks = [:cabernet]
+
+      subklass_a = Class.new(subject)
       subklass_a.drinks << :becks
-      
-      subklass_b = Class.new(@klass)
-      
-      assert_equal [:cabernet],         @klass.drinks
+
+      subklass_b = Class.new(subject)
+
+      assert_equal [:cabernet],         subject.drinks
       assert_equal [:cabernet, :becks], subklass_a.drinks
       assert_equal [:cabernet],         subklass_b.drinks
     end
-    
-    should "not inherit attributes if we set explicitely" do
-      @klass.drinks = [:cabernet]
-      subklass = Class.new(@klass)
-      
+
+    it "does not inherit attributes if we set explicitely" do
+      subject.drinks = [:cabernet]
+      subklass = Class.new(subject)
+
       subklass.drinks = [:merlot] # we only want merlot explicitely.
       assert_equal [:merlot], subklass.drinks # no :cabernet, here
     end
