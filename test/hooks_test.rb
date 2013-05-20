@@ -97,6 +97,16 @@ class HooksTest < MiniTest::Spec
         results = subject.run_hook(:after_eight)
         assert_equal [:dinner_out, :party_hard, :taxi_home], results
       end
+
+      it "stops hook if callback returns falsey" do
+        klass.class_eval do
+          after_eight { :cook_dinner }
+          after_eight { nil }
+          after_eight { :wash_dishes }
+        end
+
+        subject.run_hook(:after_eight).must_equal [:cook_dinner]
+      end
     end
 
     describe "in class context" do
