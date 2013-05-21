@@ -89,23 +89,36 @@ class HooksTest < MiniTest::Spec
         assert_equal [:c], subject.executed
       end
 
-      it "return callback results in order" do
+      it "returns true upon successful execution of all callbacks" do
         subject.class.after_eight { :dinner_out }
         subject.class.after_eight { :party_hard }
         subject.class.after_eight { :taxi_home }
 
         results = subject.run_hook(:after_eight)
-        assert_equal [:dinner_out, :party_hard, :taxi_home], results
+        assert_equal true, results
       end
 
-      it "stops hook if callback returns falsey" do
-        klass.class_eval do
-          after_eight { :cook_dinner }
-          after_eight { nil }
-          after_eight { :wash_dishes }
-        end
+      it "returns callbacks in order" do
+        ordered = []
 
-        subject.run_hook(:after_eight).must_equal [:cook_dinner]
+        subject.class.after_eight { ordered << :dinner_out }
+        subject.class.after_eight { ordered << :party_hard }
+        subject.class.after_eight { ordered << :taxi_home }
+
+        results = subject.run_hook(:after_eight)
+        assert_equal [:dinner_out, :party_hard, :taxi_home], ordered
+      end
+
+      [nil, false].each do |falsey|
+        it "stops hook and returns false if a callback returns #{falsey}" do
+          klass.class_eval do
+            after_eight { :cook_dinner }
+            after_eight { falsey }
+            after_eight { :wash_dishes }
+          end
+
+          subject.run_hook(:after_eight).must_equal false
+        end
       end
     end
 
