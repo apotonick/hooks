@@ -98,7 +98,7 @@ class HooksTest < MiniTest::Spec
         assert_equal true, results
       end
 
-      it "returns callbacks in order" do
+      it "returns all callbacks in order" do
         ordered = []
 
         subject.class.after_eight { ordered << :dinner_out }
@@ -119,6 +119,17 @@ class HooksTest < MiniTest::Spec
 
           subject.run_hook(:after_eight).must_equal false
         end
+      end
+
+      it "returns successful callbacks in order" do
+        ordered = []
+
+        subject.class.after_eight { ordered << :dinner_out }
+        subject.class.after_eight { ordered << :party_hard; false }
+        subject.class.after_eight { ordered << :taxi_home }
+
+        results = subject.run_hook(:after_eight)
+        assert_equal [:dinner_out, :party_hard], ordered
       end
     end
 
