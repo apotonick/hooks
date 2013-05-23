@@ -1,4 +1,6 @@
+require "active_support/core_ext/array/extract_options"
 require "hooks/inheritable_attribute"
+require "hooks/hook"
 
 # Almost like ActiveSupport::Callbacks but 76,6% less complex.
 #
@@ -26,7 +28,10 @@ module Hooks
 
   module ClassMethods
     def define_hooks(*names)
+      options = names.extract_options!
+
       names.each do |name|
+        hooks_options[name] = options
         setup_hook(name)
       end
     end
@@ -46,17 +51,8 @@ module Hooks
       run_hook_for(name, self, *args)
     end
 
-    # Returns true or false based on whether all callbacks are successfully executed
     def run_hook_for(name, scope, *args)
-      callbacks = callbacks_for_hook(name)
-
-      callbacks.take_while do |callback|
-        if callback.kind_of? Symbol
-          scope.send(callback, *args)
-        else
-          scope.instance_exec(*args, &callback)
-        end
-      end.length == callbacks.length
+      Hook.new(scope, callbacks_for_hook(name), hooks_options[name], *args)
     end
 
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when
@@ -75,6 +71,10 @@ module Hooks
     end
 
   private
+
+    def hooks_options
+      @hooks_options ||= {}
+    end
 
     def setup_hook(name)
       accessor_name = "_#{name}_callbacks"
