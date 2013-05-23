@@ -11,12 +11,12 @@ class HooksTest < MiniTest::Spec
 
 
   describe "Hooks.define_hook" do
-    let (:klass) {
+    let(:klass) do
       Class.new(TestClass) do
         define_hook :after_eight
       end
+    end
 
-    }
     subject { klass.new }
 
     it "provide accessors to the stored callbacks" do
@@ -89,23 +89,56 @@ class HooksTest < MiniTest::Spec
         assert_equal [:c], subject.executed
       end
 
-      it "return callback results in order" do
+      it "returns all callbacks in order" do
         subject.class.after_eight { :dinner_out }
         subject.class.after_eight { :party_hard }
         subject.class.after_eight { :taxi_home }
 
         results = subject.run_hook(:after_eight)
-        assert_equal [:dinner_out, :party_hard, :taxi_home], results
+
+        assert_equal [:dinner_out, :party_hard, :taxi_home], results.chain
+        assert_equal false, results.halted?
+        assert_equal true, results.not_halted?
       end
 
-      it "stops hook if callback returns falsey" do
-        klass.class_eval do
-          after_eight { :cook_dinner }
-          after_eight { nil }
-          after_eight { :wash_dishes }
+      describe "halts_on_falsey: true" do
+        let(:klass) do
+          Class.new(TestClass) do
+            define_hook :after_eight, :halts_on_falsey => true
+          end
         end
 
-        subject.run_hook(:after_eight).must_equal [:cook_dinner]
+        [nil, false].each do |falsey|
+          it "returns successful callbacks in order (with #{falsey.inspect})" do
+            ordered = []
+
+            subject.class.after_eight { :dinner_out }
+            subject.class.after_eight { :party_hard; falsey }
+            subject.class.after_eight { :taxi_home }
+
+            results = subject.run_hook(:after_eight)
+
+            assert_equal [:dinner_out], results.chain
+            assert_equal true, results.halted?
+          end
+        end
+      end
+
+      describe "halts_on_falsey: false" do
+        [nil, false].each do |falsey|
+          it "returns all callbacks in order (with #{falsey.inspect})" do
+            ordered = []
+
+            subject.class.after_eight { :dinner_out }
+            subject.class.after_eight { :party_hard; falsey }
+            subject.class.after_eight { :taxi_home }
+
+            results = subject.run_hook(:after_eight)
+
+            assert_equal [:dinner_out, falsey, :taxi_home], results.chain
+            assert_equal false, results.halted?
+          end
+        end
       end
     end
 
@@ -115,7 +148,7 @@ class HooksTest < MiniTest::Spec
         klass.after_eight do
           executed << :klass
         end
-        klass.run_hook :after_eight
+        klass.run_hook(:after_eight)
 
         assert_equal [:klass], executed
       end
@@ -129,7 +162,7 @@ class HooksTest < MiniTest::Spec
             executed << :have_dinner
           end
         end
-        klass.run_hook :after_eight, executed
+        klass.run_hook(:after_eight, executed)
 
         assert_equal [:have_dinner], executed
       end
