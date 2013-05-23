@@ -1,4 +1,3 @@
-require "active_support/core_ext/array/extract_options"
 require "hooks/inheritable_attribute"
 require "hooks/hook"
 
@@ -28,7 +27,7 @@ module Hooks
 
   module ClassMethods
     def define_hooks(*names)
-      options = names.extract_options!
+      options = extract_options!(names)
 
       names.each do |name|
         hooks_options[name] = options
@@ -94,6 +93,10 @@ module Hooks
     def setup_hook_accessors(accessor_name)
       inheritable_attr(accessor_name)
       send("#{accessor_name}=", [])  # initialize ivar.
+    end
+
+    def extract_options!(args)
+      args.last.is_a?(Hash) ? args.pop : {}
     end
   end
 
