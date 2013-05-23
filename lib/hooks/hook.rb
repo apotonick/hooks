@@ -36,14 +36,16 @@ module Hooks
     #   result = person.run_hook(:before_eating)
     #   result.chain #=> [:washed_hands]
     def chain
-      entries = []
+      @chain ||= begin
+        entries = []
 
-      @callbacks.take_while do |callback|
-        executed = execute_callback(@scope, callback, *@args)
-        continue_execution?(@options, executed) && entries << executed
+        @callbacks.take_while do |callback|
+          executed = execute_callback(@scope, callback, *@args)
+          continue_execution?(@options, executed) && entries << executed
+        end
+
+        entries
       end
-
-      entries
     end
 
     # Returns true or false based on whether all callbacks

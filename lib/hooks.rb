@@ -51,7 +51,9 @@ module Hooks
     end
 
     def run_hook_for(name, scope, *args)
-      Hook.new(scope, callbacks_for_hook(name), hooks_options[name], *args)
+      Hook.new(
+        scope, callbacks_for_hook(name), hooks_options[name], *args
+      ).tap { |hook| hook.chain }
     end
 
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when

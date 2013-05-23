@@ -66,7 +66,7 @@ class HooksTest < MiniTest::Spec
           self.class.after_eight :a
         end
 
-        subject.run_hook(:after_eight).chain
+        subject.run_hook(:after_eight)
 
         assert_equal [:b, :a], subject.executed
       end
@@ -78,14 +78,14 @@ class HooksTest < MiniTest::Spec
         subject.class.after_eight :a
         subject.class.after_eight lambda { |me, arg| me.executed << arg-1 }
 
-        subject.run_hook(:after_eight, subject, 1).chain
+        subject.run_hook(:after_eight, subject, 1)
 
         assert_equal [2, 0], subject.executed
       end
 
       it "execute block callbacks in instance context" do
         subject.class.after_eight { executed << :c }
-        subject.run_hook(:after_eight).chain
+        subject.run_hook(:after_eight)
         assert_equal [:c], subject.executed
       end
 
@@ -120,7 +120,6 @@ class HooksTest < MiniTest::Spec
 
             assert_equal [:dinner_out], results.chain
             assert_equal true, results.halted?
-            assert_equal false, results.not_halted?
           end
         end
       end
@@ -149,7 +148,7 @@ class HooksTest < MiniTest::Spec
         klass.after_eight do
           executed << :klass
         end
-        klass.run_hook(:after_eight).chain
+        klass.run_hook(:after_eight)
 
         assert_equal [:klass], executed
       end
@@ -163,7 +162,7 @@ class HooksTest < MiniTest::Spec
             executed << :have_dinner
           end
         end
-        klass.run_hook(:after_eight, executed).chain
+        klass.run_hook(:after_eight, executed)
 
         assert_equal [:have_dinner], executed
       end
