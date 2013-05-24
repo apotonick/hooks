@@ -34,8 +34,7 @@ module Hooks
       options = extract_options!(names)
 
       names.each do |name|
-        hooks_options[name] = options# FIXME: 2brm.
-        setup_hook(name)
+        setup_hook(name, options)
       end
     end
     alias_method :define_hook, :define_hooks
@@ -55,9 +54,7 @@ module Hooks
     end
 
     def run_hook_for(name, scope, *args)
-      Hook.new(
-        scope, callbacks_for_hook(name), hooks_options[name], *args
-      ).tap { |hook| hook.chain }
+      _hooks[name].run(scope, *args)
     end
 
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when
@@ -76,13 +73,8 @@ module Hooks
     end
 
   private
-
-    def hooks_options
-      @hooks_options ||= {}
-    end
-
-    def setup_hook(name)
-      _hooks[name] = []
+    def setup_hook(name, options)
+      _hooks[name] = Hook.new(options)
       define_hook_writer(name)
     end
 

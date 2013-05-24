@@ -19,12 +19,6 @@ class HooksTest < MiniTest::Spec
 
     subject { klass.new }
 
-    it "provide accessors to the stored callbacks" do
-      assert_equal [], klass._after_eight_callbacks
-      klass._after_eight_callbacks << :dine
-      assert_equal [:dine], klass._after_eight_callbacks
-    end
-
     it "respond to Class.callbacks_for_hook" do
       assert_equal [], klass.callbacks_for_hook(:after_eight)
       klass.after_eight :dine
@@ -40,20 +34,21 @@ class HooksTest < MiniTest::Spec
     describe "creates a public writer for the hook that" do
       it "accepts method names" do
         klass.after_eight :dine
-        assert_equal [:dine], klass._after_eight_callbacks
+        assert_equal [:dine], klass._hooks[:after_eight]
       end
 
       it "accepts blocks" do
         klass.after_eight do true; end
-        assert klass._after_eight_callbacks.first.kind_of? Proc
+        assert klass._hooks[:after_eight].first.kind_of? Proc
       end
 
       it "be inherited" do
         klass.after_eight :dine
         subklass = Class.new(klass)
 
-        assert_equal [:dine], subklass._after_eight_callbacks
+        assert_equal [:dine], subklass._hooks[:after_eight]
       end
+      # TODO: check if options are not shared!
     end
 
     describe "Hooks#run_hook" do
@@ -96,7 +91,7 @@ class HooksTest < MiniTest::Spec
 
         results = subject.run_hook(:after_eight)
 
-        assert_equal [:dinner_out, :party_hard, :taxi_home], results.chain
+        assert_equal [:dinner_out, :party_hard, :taxi_home], results
         assert_equal false, results.halted?
         assert_equal true, results.not_halted?
       end
@@ -118,7 +113,7 @@ class HooksTest < MiniTest::Spec
 
             results = subject.run_hook(:after_eight)
 
-            assert_equal [:dinner_out], results.chain
+            assert_equal [:dinner_out], results
             assert_equal true, results.halted?
           end
         end
@@ -135,7 +130,7 @@ class HooksTest < MiniTest::Spec
 
             results = subject.run_hook(:after_eight)
 
-            assert_equal [:dinner_out, falsey, :taxi_home], results.chain
+            assert_equal [:dinner_out, falsey, :taxi_home], results
             assert_equal false, results.halted?
           end
         end
