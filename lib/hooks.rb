@@ -21,8 +21,12 @@ module Hooks
   VERSION = "0.2.2"
 
   def self.included(base)
-    base.extend InheritableAttribute
-    base.extend ClassMethods
+    base.class_eval do
+      extend InheritableAttribute
+      extend ClassMethods
+      inheritable_attr :_hooks
+      self._hooks= {}
+    end
   end
 
   module ClassMethods
@@ -30,7 +34,7 @@ module Hooks
       options = extract_options!(names)
 
       names.each do |name|
-        hooks_options[name] = options
+        hooks_options[name] = options# FIXME: 2brm.
         setup_hook(name)
       end
     end
@@ -68,7 +72,7 @@ module Hooks
     #
     # would run callbacks in the object _instance_ context, passing +self+ as block parameter.
     def callbacks_for_hook(name)
-      send("_#{name}_callbacks")
+      _hooks[name]
     end
 
   private
@@ -78,23 +82,16 @@ module Hooks
     end
 
     def setup_hook(name)
-      accessor_name = "_#{name}_callbacks"
-
-      setup_hook_accessors(accessor_name)
-      define_hook_writer(name, accessor_name)
+      _hooks[name] = []
+      define_hook_writer(name)
     end
 
-    def define_hook_writer(hook, accessor_name)
+    def define_hook_writer(name)
       instance_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
-        def #{hook}(method=nil, &block)
-          #{accessor_name} << (block || method)
+        def #{name}(method=nil, &block)
+          _hooks[:#{name}] << (block || method)
         end
       RUBY_EVAL
-    end
-
-    def setup_hook_accessors(accessor_name)
-      inheritable_attr(accessor_name)
-      send("#{accessor_name}=", [])  # initialize ivar.
     end
 
     def extract_options!(args)
