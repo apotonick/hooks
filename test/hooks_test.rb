@@ -165,7 +165,7 @@ class HooksTest < MiniTest::Spec
   end
 
   describe "Inheritance" do
-    let (:klass) {
+    let (:superclass) {
       Class.new(TestClass) do
         define_hook :after_eight
 
@@ -177,14 +177,14 @@ class HooksTest < MiniTest::Spec
       end
     }
 
-    it "inherits the hook" do
-      Class.new(klass) do
-        after_eight :have_dinner
+    let (:subclass) { Class.new(superclass) do after_eight :have_dinner end }
 
-        def have_dinner
-          executed << :have_dinner
-        end
-      end.new.class.callbacks_for_hook(:after_eight).must_equal [:take_shower, :have_dinner]
+    it "inherits callbacks from the hook" do
+      subclass.callbacks_for_hook(:after_eight).must_equal [:take_shower, :have_dinner]
+    end
+
+    it "doesn't mix up superclass hooks" do
+      subclass.superclass.callbacks_for_hook(:after_eight).must_equal [:take_shower]
     end
   end
 end
