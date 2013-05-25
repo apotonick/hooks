@@ -97,7 +97,7 @@ def wash_pawns(who, when)
 Not sure why a cat should have ice cream for dinner. Beside that, I was tempted naming this gem _hooker_.
 
 
-## Running And Halting Hooks.
+## Running And Halting Hooks
 
 Using `#run_hook` doesn't only run all callbacks for this hook but also returns an array of the results from each callback method or block.
 
@@ -132,7 +132,7 @@ result = Garfield.new.run_hook :after_dark
 # => ["Chase mice"]
 ```
 
-This will only run the first two callbacks. Note that the result doesn't contain the nil value. You even can check if the chain was halted.
+This will only run the first two callbacks. Note that the result doesn't contain the `nil` value. You even can check if the chain was halted.
 
 ```ruby
 result.halted? #=> true
