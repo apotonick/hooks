@@ -18,7 +18,7 @@ require "hooks/hook"
 #
 #   cat.run_hook :after_dinner
 module Hooks
-  VERSION = "0.2.2"
+  VERSION = "0.3.0"
 
   def self.included(base)
     base.class_eval do

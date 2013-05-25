@@ -1,3 +1,8 @@
+h2 0.3.0
+
+* The callback chain can now be halted by configuring the hook as @halts_on_falsey: true@ and returning @nil@ or @false@ from the callback.
+* Internal refactorings: hooks are now encapsulated in @Hook@ instances and run their callback chains.
+
 h2. 0.2.2
 
 * `#run_hook` now returns the list of callback results.
