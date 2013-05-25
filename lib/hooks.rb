@@ -109,7 +109,7 @@ module Hooks
   class HookSet < Hash
     def clone
       super.tap do |cloned|
-        each do |name, callbacks| { cloned[name] = callbacks.clone }
+        each { |name, callbacks| cloned[name] = callbacks.clone }
       end
     end
   end
