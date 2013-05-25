@@ -25,7 +25,7 @@ module Hooks
       extend InheritableAttribute
       extend ClassMethods
       inheritable_attr :_hooks
-      self._hooks= {}
+      self._hooks= HookSet.new
     end
   end
 
@@ -104,5 +104,13 @@ module Hooks
   #   block.call("i want ice cream!")
   def run_hook(name, *args)
     self.class.run_hook_for(name, self, *args)
+  end
+
+  class HookSet < Hash
+    def clone
+      super.tap do |cloned|
+        each do |name, callbacks| { cloned[name] = callbacks.clone }
+      end
+    end
   end
 end

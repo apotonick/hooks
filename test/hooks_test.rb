@@ -170,10 +170,6 @@ class HooksTest < MiniTest::Spec
         define_hook :after_eight
 
         after_eight :take_shower
-
-        def take_shower
-          executed << :take_shower
-        end
       end
     }
 
@@ -186,5 +182,17 @@ class HooksTest < MiniTest::Spec
     it "doesn't mix up superclass hooks" do
       subclass.superclass.callbacks_for_hook(:after_eight).must_equal [:take_shower]
     end
+  end
+end
+
+class HookSetTest < MiniTest::Spec
+  subject { Hooks::HookSet.new }
+
+  it "responds to #clone" do
+    subject[:after_eight] = [:drink_beer]
+    clone = subject.clone
+    clone[:after_eight] << :open_fridge
+
+    subject.must_equal(:after_eight => [:drink_beer])
   end
 end
