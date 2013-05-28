@@ -25,6 +25,13 @@ class HooksTest < MiniTest::Spec
       assert_equal [:dine], klass.callbacks_for_hook(:after_eight)
     end
 
+    it 'symbolizes strings when defining a hook' do
+      subject.class.define_hooks :before_one, 'after_one'
+      assert_equal [], klass.callbacks_for_hook(:before_one)
+      assert_equal [], klass.callbacks_for_hook(:after_one)
+      assert_equal [], klass.callbacks_for_hook('after_one')
+    end
+
     it "accept multiple hook names" do
       subject.class.define_hooks :before_ten, :after_ten
       assert_equal [], klass.callbacks_for_hook(:before_ten)
