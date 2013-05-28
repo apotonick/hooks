@@ -54,7 +54,7 @@ module Hooks
     end
 
     def run_hook_for(name, scope, *args)
-      _hooks[name].run(scope, *args)
+      callbacks_for_hook(name).run(scope, *args)
     end
 
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when
@@ -69,12 +69,12 @@ module Hooks
     #
     # would run callbacks in the object _instance_ context, passing +self+ as block parameter.
     def callbacks_for_hook(name)
-      _hooks[name]
+      _hooks[name.to_sym]
     end
 
   private
     def setup_hook(name, options)
-      _hooks[name] = Hook.new(options)
+      _hooks[name.to_sym] = Hook.new(options)
       define_hook_writer(name)
     end
 
