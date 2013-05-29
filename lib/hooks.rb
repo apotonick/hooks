@@ -54,7 +54,7 @@ module Hooks
     end
 
     def run_hook_for(name, scope, *args)
-      callbacks_for_hook(name).run(scope, *args)
+      _hooks[name].run(scope, *args)
     end
 
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when
@@ -69,12 +69,12 @@ module Hooks
     #
     # would run callbacks in the object _instance_ context, passing +self+ as block parameter.
     def callbacks_for_hook(name)
-      _hooks[name.to_sym]
+      _hooks[name]
     end
 
   private
     def setup_hook(name, options)
-      _hooks[name.to_sym] = Hook.new(options)
+      _hooks[name] = Hook.new(options)
       define_hook_writer(name)
     end
 
@@ -107,6 +107,14 @@ module Hooks
   end
 
   class HookSet < Hash
+    def [](name)
+      super(name.to_sym)
+    end
+
+    def []=(name, values)
+      super(name.to_sym, values)
+    end
+
     def clone
       super.tap do |cloned|
         each { |name, callbacks| cloned[name] = callbacks.clone }
