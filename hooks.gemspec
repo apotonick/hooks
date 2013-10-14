@@ -1,7 +1,7 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'hooks'
+require 'hooks/version'
 
 Gem::Specification.new do |s|
   s.name        = "hooks"

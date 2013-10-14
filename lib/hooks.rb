@@ -19,8 +19,6 @@ require "hooks/hook_set"
 #
 #   cat.run_hook :after_dinner
 module Hooks
-  VERSION = "0.3.1"
-
   def self.included(base)
     base.class_eval do
       extend InheritableAttribute
