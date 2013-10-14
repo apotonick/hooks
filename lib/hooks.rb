@@ -1,5 +1,6 @@
 require "hooks/inheritable_attribute"
 require "hooks/hook"
+require "hooks/hook_set"
 
 # Almost like ActiveSupport::Callbacks but 76,6% less complex.
 #
@@ -18,8 +19,6 @@ require "hooks/hook"
 #
 #   cat.run_hook :after_dinner
 module Hooks
-  VERSION = "0.3.1"
-
   def self.included(base)
     base.class_eval do
       extend InheritableAttribute
@@ -84,6 +83,11 @@ module Hooks
           _hooks[:#{name}] << (block || method)
         end
       RUBY_EVAL
+      class_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+        def #{name}(method=nil, &block)
+          self.class._hooks[:#{name}] << (block || method)
+        end
+      RUBY_EVAL
     end
 
     def extract_options!(args)
@@ -104,21 +108,5 @@ module Hooks
   #   block.call("i want ice cream!")
   def run_hook(name, *args)
     self.class.run_hook_for(name, self, *args)
-  end
-
-  class HookSet < Hash
-    def [](name)
-      super(name.to_sym)
-    end
-
-    def []=(name, values)
-      super(name.to_sym, values)
-    end
-
-    def clone
-      super.tap do |cloned|
-        each { |name, callbacks| cloned[name] = callbacks.clone }
-      end
-    end
   end
 end
