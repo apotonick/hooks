@@ -73,6 +73,10 @@ class HooksTest < MiniTest::Spec
         assert_equal [:b, :a], subject.executed
       end
 
+      it "returns empty Results when no callbacks defined" do
+        subject.run_hook(:after_eight).must_equal Hooks::Hook::Results.new
+      end
+
       it "accept arbitrary parameters" do
         subject.instance_eval do
           def a(me, arg); executed << arg+1; end
