@@ -1,5 +1,6 @@
 require "hooks/inheritable_attribute"
 require "hooks/hook"
+require "hooks/hook_set"
 
 # Almost like ActiveSupport::Callbacks but 76,6% less complex.
 #
@@ -109,21 +110,5 @@ module Hooks
   #   block.call("i want ice cream!")
   def run_hook(name, *args)
     self.class.run_hook_for(name, self, *args)
-  end
-
-  class HookSet < Hash
-    def [](name)
-      super(name.to_sym)
-    end
-
-    def []=(name, values)
-      super(name.to_sym, values)
-    end
-
-    def clone
-      super.tap do |cloned|
-        each { |name, callbacks| cloned[name] = callbacks.clone }
-      end
-    end
   end
 end
