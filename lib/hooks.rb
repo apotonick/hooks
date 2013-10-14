@@ -84,6 +84,11 @@ module Hooks
           _hooks[:#{name}] << (block || method)
         end
       RUBY_EVAL
+      class_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+        def #{name}(method=nil, &block)
+          self.class._hooks[:#{name}] << (block || method)
+        end
+      RUBY_EVAL
     end
 
     def extract_options!(args)
