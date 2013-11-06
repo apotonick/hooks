@@ -6,7 +6,11 @@ class InstanceHooksTest < HooksTest
       include Hooks::InstanceHooks
     end }
 
-    subject { klass.new }
+    subject { klass.new.tap do |obj|
+      obj.instance_eval do
+        def dine; executed << :dine; end
+      end
+    end }
 
     it "adds hook to instance" do
       subject.define_hook :after_eight
@@ -32,9 +36,16 @@ class InstanceHooksTest < HooksTest
       end
 
       it "responds to #run_hook" do
-        subject.instance_eval do
-          def dine; executed << :dine; end
-        end
+        subject.run_hook :after_eight
+        subject.executed.must_equal [:dine]
+      end
+    end
+
+    describe "#after_eight from class (no define_hook in instance)" do
+      it "responds to #after_eight" do
+        klass.define_hook :after_eight
+
+        subject.after_eight :dine
 
         subject.run_hook :after_eight
         subject.executed.must_equal [:dine]
