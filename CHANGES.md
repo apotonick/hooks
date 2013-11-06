@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Fix a bug where the hook writer method (e.g. `#after_dark`) wasn't available on the instance even when `InstanceHooks` was included.
+
 ## 0.3.2
 
 * Added `Hooks::InstanceHooks` to add hooks and/or callbacks on instance level. Thanks to @mpapis for that suggestion.
