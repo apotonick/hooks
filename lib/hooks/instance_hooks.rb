@@ -12,6 +12,7 @@ module Hooks
     end
 
     module ClassMethods
+      # Adds a hook writer to the instance in addition to the class writer.
       def define_hook_writer(name)
         super
         class_eval *hook_writer_args(name)
