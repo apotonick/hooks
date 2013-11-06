@@ -77,11 +77,18 @@ module Hooks
     end
 
     def define_hook_writer(name)
-      instance_eval <<-RUBY_EVAL, __FILE__, __LINE__ + 1
+      instance_eval *hook_writer_args(name)
+    end
+
+    def hook_writer_args(name)
+      # DISCUSS: isn't there a simpler way to define a dynamic method? should the internal logic be handled by HooksSet instead?
+      str = <<-RUBY_EVAL
         def #{name}(method=nil, &block)
           _hooks[:#{name}] << (block || method)
         end
       RUBY_EVAL
+
+      [str, __FILE__, __LINE__ + 1]
     end
 
     def extract_options!(args)
