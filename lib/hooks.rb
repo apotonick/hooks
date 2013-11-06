@@ -120,3 +120,5 @@ module Hooks
     end
   end
 end
+
+require "hooks/instance_hooks"
