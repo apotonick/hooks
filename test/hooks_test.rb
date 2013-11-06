@@ -199,11 +199,18 @@ end
 class HookSetTest < MiniTest::Spec
   subject { Hooks::HookSet.new }
 
-  it "responds to #clone" do
-    subject[:after_eight] = [:drink_beer]
-    clone = subject.clone
-    clone[:after_eight] << :open_fridge
+  let (:first_hook)   { Hooks::Hook.new(:halts_on_falsey => true) }
+  let (:second_hook)  { Hooks::Hook.new(:halts_on_falsey => false) }
 
-    subject.must_equal(:after_eight => [:drink_beer])
+  it "responds to #clone" do
+    subject[:after_eight] = [first_hook]
+
+    clone = subject.clone
+
+    clone[:after_eight] << second_hook
+
+    subject.must_equal(:after_eight => [first_hook])
+    clone.must_equal(:after_eight => [first_hook, second_hook])
   end
+  # TODO: test if options get cloned.
 end
