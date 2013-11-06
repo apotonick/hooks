@@ -138,12 +138,49 @@ This will only run the first two callbacks. Note that the result doesn't contain
 result.halted? #=> true
 ```
 
+## Instance Hooks
+
+You can also define hooks and/or add callbacks per instance. This is helpful if your class should define a basic set of hooks and callbacks that are then extended by instances.
+
+```ruby
+class Cat
+  include Hooks
+  include Hooks::InstanceHooks
+
+  define_hook :after_dark
+
+  after_dark { "Chase mice" }
+end
+```
+
+Note that you have to include `Hooks::InstanceHooks` to get this additional functionality.
+
+See how callbacks can be added to a separate object, now.
+
+```ruby
+garfield = Cat.new
+
+garfield.after_dark :sleep
+garfield.run_hook(:after_dark) # => invoke "Chase mice" hook and #sleep
+```
+
+This will copy all callbacks from the `after_dark` hook to the instance and add a second hook. This all happens on the `garfield` instance, only, and leaves the class untouched.
+
+Naturally, adding new hooks works like-wise.
+
+```ruby
+garfield.define_hook :before_six
+garfield.before_six { .. }
+```
+This feature was added in 0.3.2.
+
+
 ## Installation
 
 In your Gemfile, do
 
 ```ruby
-gem hooks
+gem "hooks"
 ```
 
 ## Anybody using it?
