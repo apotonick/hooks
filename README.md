@@ -155,7 +155,7 @@ end
 
 Note that you have to include `Hooks::InstanceHooks` to get this additional functionality.
 
-See how callbacks can be added to a separate object, now.
+Callbacks can now be added to a single object.
 
 ```ruby
 garfield = Cat.new
@@ -164,7 +164,7 @@ garfield.after_dark :sleep
 garfield.run_hook(:after_dark) # => invoke "Chase mice" hook and #sleep
 ```
 
-This will copy all callbacks from the `after_dark` hook to the instance and add a second hook. This all happens on the `garfield` instance, only, and leaves the class untouched.
+What happens is that the `garfield` object inherits existing hooks with all their callbacks from the `Cat` class, namely, this is `:after_dark`. It can then add local callbacks (or even more hooks) to itself without affecting the `Cat` class.
 
 Naturally, adding new hooks works like-wise.
 
