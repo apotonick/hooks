@@ -1,3 +1,7 @@
+## 0.3.2
+
+* Added `Hooks::InstanceHooks` to add hooks and/or callbacks on instance level. Thanks to @mpapis for that suggestion.
+
 ## 0.3.1
 
 * Fix a bug, string hook names are now treated as symbols.
