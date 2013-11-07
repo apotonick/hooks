@@ -50,6 +50,26 @@ class InstanceHooksTest < HooksTest
         subject.run_hook :after_eight
         subject.executed.must_equal [:dine]
       end
+
+      it "keeps hooks separate per instance" do
+        klass.define_hook   :after_eight
+
+        other = klass.new.tap do |obj|
+          obj.instance_eval do
+            def dine_other; executed << :dine_other; end
+          end
+        end
+
+        subject.after_eight :dine
+        subject.run_hook    :after_eight
+        other.after_eight   :dine_other
+        other.run_hook      :after_eight
+
+        subject.executed.must_equal [:dine]
+        other.executed.must_equal   [:dine_other]
+      end
+
     end
+
   end
 end
