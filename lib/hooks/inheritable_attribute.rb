@@ -22,12 +22,16 @@ module Hooks
         def #{name}=(v)
           @#{name} = v
         end
-        
+
         def #{name}
-          return @#{name} unless superclass.respond_to?(:#{name}) and value = superclass.#{name}
-          @#{name} ||= value.clone # only do this once.
+          @#{name} ||= InheritableAttribute.inherit_for(self, :#{name})
         end
       }
     end
-  end  
+
+    def self.inherit_for(klass, name)
+      return unless klass.superclass.respond_to?(name) and value = klass.superclass.send(name)
+      value.clone # only do this once.
+    end
+  end
 end
