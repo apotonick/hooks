@@ -19,6 +19,8 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.license       = 'MIT'
 
+  s.add_dependency "uber", "~> 0.0.2"
+
   s.add_development_dependency "minitest", ">= 5.0.0"
   s.add_development_dependency "rake"
 end
