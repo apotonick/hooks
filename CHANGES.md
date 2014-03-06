@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Removing `InheritableAttribute` as we use uber's `InheritableAttr` now.
+
 ## 0.3.3
 
 * Fix a bug where the hook writer method (e.g. `#after_dark`) wasn't available on the instance even when `InstanceHooks` was included.

@@ -1,4 +1,4 @@
-require "hooks/inheritable_attribute"
+require "uber/inheritable_attr"
 require "hooks/hook"
 
 # Almost like ActiveSupport::Callbacks but 76,6% less complex.
@@ -20,7 +20,7 @@ require "hooks/hook"
 module Hooks
   def self.included(base)
     base.class_eval do
-      extend InheritableAttribute
+      extend Uber::InheritableAttr
       extend ClassMethods
       inheritable_attr :_hooks
       self._hooks= HookSet.new
