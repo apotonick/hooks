@@ -1,3 +1,7 @@
+## 0.3.6
+
+* Use `Uber::Options::Value` for evaluating callbacks, now that we have that gem.
+
 ## 0.3.5
 
 * Fixing bug where `uninitialized constant Hooks` was thrown when using InheritableAttribute exclusively. Thanks to @haswalt for reporting.
