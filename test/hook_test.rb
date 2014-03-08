@@ -7,7 +7,7 @@ class HookTest < MiniTest::Spec
     subject << :play_music
     subject << :drink_beer
 
-    subject.to_a.must_equal [:play_music, :drink_beer]
+    subject.to_a.map(&:to_sym).must_equal [:play_music, :drink_beer]
   end
 end
 

@@ -111,6 +111,7 @@ module Hooks
     self.class.run_hook_for(name, self, *args)
   end
 
+
   class HookSet < Hash
     def [](name)
       super(name.to_sym)

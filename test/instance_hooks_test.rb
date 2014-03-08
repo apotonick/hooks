@@ -22,7 +22,7 @@ class InstanceHooksTest < HooksTest
       klass.define_hook :after_eight
       klass.after_eight :dine
 
-      assert_equal [:dine], subject.callbacks_for_hook(:after_eight)
+      assert_equal [:dine], subject.callbacks_for_hook(:after_eight).map(&:to_sym)
     end
 
     describe "#after_eight (adding callbacks)" do
@@ -32,7 +32,7 @@ class InstanceHooksTest < HooksTest
       end
 
       it "adds #after_eight hook" do
-        assert_equal [:dine], subject.callbacks_for_hook(:after_eight)
+        assert_equal [:dine], subject.callbacks_for_hook(:after_eight).map(&:to_sym)
       end
 
       it "responds to #run_hook" do

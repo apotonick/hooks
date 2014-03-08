@@ -22,7 +22,7 @@ class HooksTest < MiniTest::Spec
     it "respond to Class.callbacks_for_hook" do
       assert_equal [], klass.callbacks_for_hook(:after_eight)
       klass.after_eight :dine
-      assert_equal [:dine], klass.callbacks_for_hook(:after_eight)
+      assert_equal [:dine], klass.callbacks_for_hook(:after_eight).map(&:to_sym)
     end
 
     it 'symbolizes strings when defining a hook' do
@@ -41,19 +41,19 @@ class HooksTest < MiniTest::Spec
     describe "creates a public writer for the hook that" do
       it "accepts method names" do
         klass.after_eight :dine
-        assert_equal [:dine], klass._hooks[:after_eight]
+        assert_equal [:dine], klass._hooks[:after_eight].map(&:to_sym)
       end
 
       it "accepts blocks" do
         klass.after_eight do true; end
-        assert klass._hooks[:after_eight].first.kind_of? Proc
+        assert klass._hooks[:after_eight].first.to_sym.kind_of? Proc
       end
 
       it "be inherited" do
         klass.after_eight :dine
         subklass = Class.new(klass)
 
-        assert_equal [:dine], subklass._hooks[:after_eight]
+        assert_equal [:dine], subklass._hooks[:after_eight].map(&:to_sym)
       end
       # TODO: check if options are not shared!
     end
@@ -187,11 +187,11 @@ class HooksTest < MiniTest::Spec
     let (:subclass) { Class.new(superclass) do after_eight :have_dinner end }
 
     it "inherits callbacks from the hook" do
-      subclass.callbacks_for_hook(:after_eight).must_equal [:take_shower, :have_dinner]
+      subclass.callbacks_for_hook(:after_eight).map(&:to_sym).must_equal [:take_shower, :have_dinner]
     end
 
     it "doesn't mix up superclass hooks" do
-      subclass.superclass.callbacks_for_hook(:after_eight).must_equal [:take_shower]
+      subclass.superclass.callbacks_for_hook(:after_eight).map(&:to_sym).must_equal [:take_shower]
     end
   end
 end

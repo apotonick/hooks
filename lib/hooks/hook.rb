@@ -1,3 +1,5 @@
+require 'uber/options'
+
 module Hooks
   class Hook < Array
     def initialize(options)
@@ -42,13 +44,13 @@ module Hooks
       end
     end
 
+    def <<(callback)
+      super Uber::Options::Value.new(callback, :dynamic => true) # allows string and symbol method names.
+    end
+
   private
     def execute_callback(scope, callback, *args)
-      if callback.kind_of?(Symbol)
-        scope.send(callback, *args)
-      else
-        scope.instance_exec(*args, &callback)
-      end
+      callback.evaluate(scope, *args) # from Uber::Options::Value.
     end
 
     def continue_execution?(result)
