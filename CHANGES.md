@@ -1,3 +1,7 @@
+## 0.3.5
+
+* Fixing bug where `uninitialized constant Hooks` was thrown when using InheritableAttribute exclusively. Thanks to @haswalt for reporting.
+
 ## 0.3.4
 
 * Removing `InheritableAttribute` as we use uber's `InheritableAttr` now.
