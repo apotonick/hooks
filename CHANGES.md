@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Same as 0.3.6 but we wanna indicate an internal change (using uber).
+
 ## 0.3.6
 
 * Use `Uber::Options::Value` for evaluating callbacks, now that we have that gem.
