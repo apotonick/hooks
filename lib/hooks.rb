@@ -69,7 +69,7 @@ module Hooks
     #       callback.evaluate(self, "create")
     #     end
     #
-    # Runa callbacks in the object _instance_ context and pass "create" as the only argument.
+    # Runs callbacks in the object _instance_ context and pass "create" as the only argument.
     def callbacks_for_hook(name)
       _hooks[name]
     end
