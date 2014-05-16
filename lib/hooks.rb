@@ -58,14 +58,18 @@ module Hooks
     # Returns the callbacks for +name+. Handy if you want to run the callbacks yourself, say when
     # they should be executed in another context.
     #
+    # As callbacks can be static values, lambdas or methods, they're wrapped by Uber::Option::Value
+    # which gives you a very convenient way to execute the callback without knowing its type using
+    # <tt>Value#evaluate</tt>.
+    #
     # Example:
     #
     #   def initialize
     #     self.class.callbacks_for_hook(:after_eight).each do |callback|
-    #       instance_exec(self, &callback)
+    #       callback.evaluate(self, "create")
     #     end
     #
-    # would run callbacks in the object _instance_ context, passing +self+ as block parameter.
+    # Runa callbacks in the object _instance_ context and pass "create" as the only argument.
     def callbacks_for_hook(name)
       _hooks[name]
     end
