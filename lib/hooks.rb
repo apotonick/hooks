@@ -1,5 +1,5 @@
-require "uber/inheritable_attr"
-require "hooks/hook"
+            require "uber/inheritable_attr"
+            require "hooks/hook"
 
 # Almost like ActiveSupport::Callbacks but 76,6% less complex.
 #
