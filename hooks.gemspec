@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "uber", "~> 0.0.4"
 
-  s.add_development_dependency "minitest", ">= 5.0.0"
+  s.add_development_dependency "minitest", ">= 5.4.1"
   s.add_development_dependency "rake"
 end
