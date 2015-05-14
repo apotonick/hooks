@@ -12,12 +12,11 @@ Gem::Specification.new do |s|
   s.homepage    = "http://nicksda.apotomo.de/2010/09/hooks-and-callbacks-for-ruby-but-simple/"
   s.summary     = %q{Generic hooks with callbacks for Ruby.}
   s.description = %q{Declaratively define hooks, add callbacks and run them with the options you like.}
-  s.license = "MIT"
+  s.license     = "MIT"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths = ["lib"]
-  s.license       = 'MIT'
 
   s.add_dependency "uber", "~> 0.0.4"
 
