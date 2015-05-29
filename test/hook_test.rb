@@ -9,6 +9,21 @@ class HookTest < MiniTest::Spec
 
     subject.to_a.map(&:to_sym).must_equal [:play_music, :drink_beer]
   end
+
+  it "evals the procs in the context of its argument" do
+    subject << proc { self }
+    obj = Object.new
+    subject.run(obj).must_equal [obj]
+  end
+
+  describe "the call_procs_in_original_context option" do
+    subject { Hooks::Hook.new(call_procs_in_original_context: true) }
+    it "calls the procs in its original context" do
+      subject << proc { self }
+      obj = Object.new
+      subject.run(obj).must_equal [self]
+    end
+  end
 end
 
 class ResultsTest < MiniTest::Spec

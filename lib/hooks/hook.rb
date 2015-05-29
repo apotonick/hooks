@@ -45,6 +45,10 @@ module Hooks
     end
 
     def <<(callback)
+      if callback.is_a?(Proc) && @options[:call_procs_in_original_context]
+        p = callback
+        callback = proc { |*args, &b| p.call(*args, &b) }
+      end
       super Uber::Options::Value.new(callback, :dynamic => true) # allows string and symbol method names.
     end
 
