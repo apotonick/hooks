@@ -89,10 +89,26 @@ class HooksTest < MiniTest::Spec
         assert_equal [2, 0], subject.executed
       end
 
-      it "execute block callbacks in instance context" do
-        subject.class.after_eight { executed << :c }
-        subject.run_hook(:after_eight)
-        assert_equal [:c], subject.executed
+      describe "the define-time scope option" do
+        it "execute block callbacks in instance context when not defined with a scope option" do
+          subject.class.after_eight { executed << :c }
+          subject.run_hook(:after_eight)
+          assert_equal [:c], subject.executed
+        end
+
+        it "uses the define-time scope option to determine the evaluation scope" do
+          subject.class.define_hook(
+            :scoped_hook, scope: lambda { |callback, scope| [[callback], [scope]] })
+          hook = subject.class._hooks[:scoped_hook]
+          subject.class.scoped_hook :flatten
+          subject.run_hook(:scoped_hook).must_equal [[hook.last, subject]]
+        end
+        it "evaluates procs in their definition context if the scope option returns nil" do
+          subject.class.define_hook(
+            :scoped_hook, scope: lambda { |callback, scope| scope if !callback.proc? })
+          subject.class.scoped_hook(lambda { self })
+          subject.run_hook(:scoped_hook).must_equal [self]
+        end
       end
 
       it "returns all callbacks in order" do
