@@ -1,3 +1,7 @@
+## 0.4.1
+
+* Introduce `define_hook .., scope: ->{}` option. This allows changing the callback execution context per callback. Many thanks to @doudou for pushing this.
+
 ## 0.4.0
 
 * Same as 0.3.6 but we wanna indicate an internal change (using uber).
