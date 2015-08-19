@@ -96,16 +96,16 @@ class HooksTest < MiniTest::Spec
           assert_equal [:c], subject.executed
         end
 
-        it "uses the define-time scope option to determine the evaluation scope" do
-          subject.class.define_hook(
-            :scoped_hook, scope: lambda { |callback, scope| [[callback], [scope]] })
+        it ":scope receives callback and original scope" do
+          subject.class.define_hook(:scoped_hook, scope: lambda { |callback, scope| [[callback], [scope]] })
           hook = subject.class._hooks[:scoped_hook]
-          subject.class.scoped_hook :flatten
+          subject.class.scoped_hook :flatten # call [[callback], [scope]].flatten
           subject.run_hook(:scoped_hook).must_equal [[hook.last, subject]]
         end
-        it "evaluates procs in their definition context if the scope option returns nil" do
+
+        it "evaluates procs in their original context when :scope returns nil" do
           subject.class.define_hook(
-            :scoped_hook, scope: lambda { |callback, scope| scope if !callback.proc? })
+            :scoped_hook, scope: lambda { |callback, scope| nil })
           subject.class.scoped_hook(lambda { self })
           subject.run_hook(:scoped_hook).must_equal [self]
         end

@@ -138,6 +138,26 @@ This will only run the first two callbacks. Note that the result doesn't contain
 result.halted? #=> true
 ```
 
+## Execution Scope
+
+Normally, callbacks are executed in object context. You're free to provide your own context object using `:scope`.
+
+```ruby
+define_hook :before_lunch, scope: lambda { |callback, scope| Logger }
+```
+
+This will evaluate the lambda in `Logger` class context.
+
+Return `nil` to execute the lambda in the original context.
+
+```ruby
+define_hook :before_lunch, scope: lambda { |*| nil }
+what = "hands"
+before_lunch << lambda { puts "wash #{what}" } # executed in original context.
+```
+
+The `:scope` lambda is executed for every added callback per run, hence the block options.
+
 ## Instance Hooks
 
 You can also define hooks and/or add callbacks per instance. This is helpful if your class should define a basic set of hooks and callbacks that are then extended by instances.
@@ -197,6 +217,6 @@ gem "hooks"
 
 ## License
 
-Copyright (c) 2013, Nick Sutterer
+Copyright (c) 2013-2015, Nick Sutterer
 
 Released under the MIT License.

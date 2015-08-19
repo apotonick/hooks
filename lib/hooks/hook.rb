@@ -5,12 +5,6 @@ module Hooks
     def initialize(options)
       super()
       @options = options
-      if !@options.has_key?(:scope)
-        @options[:scope] = lambda { |_, scope| scope }
-      elsif !@options[:scope].respond_to?(:call)
-        scope_object = @options[:scope]
-        @options[:scope] = lambda { |_, scope| scope_object }
-      end
     end
 
     # The chain contains the return values of the executed callbacks.
@@ -43,7 +37,6 @@ module Hooks
     #   result.chain #=> [:washed_hands]
     def run(scope, *args)
       inject(Results.new) do |results, callback|
-        scope = @options[:scope][callback, scope]
         executed = execute_callback(scope, callback, *args)
 
         return results.halted! unless continue_execution?(executed)
@@ -57,6 +50,12 @@ module Hooks
 
   private
     def execute_callback(scope, callback, *args)
+      scope = @options[:scope].(callback, scope) if @options[:scope]
+
+      evaluate_callback(scope, callback, *args)
+    end
+
+    def evaluate_callback(scope, callback, *args)
       callback.evaluate(scope, *args) # from Uber::Options::Value.
     end
 

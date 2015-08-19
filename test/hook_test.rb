@@ -15,26 +15,6 @@ class HookTest < MiniTest::Spec
     obj = Object.new
     subject.run(obj).must_equal [obj]
   end
-
-  describe "the scope option" do
-   it "passes the callback and the scope as arguments and evaluates on the returned scope" do
-      obj = Object.new
-      hook = Hooks::Hook.new(scope: lambda { |callback, scope| [[callback], [scope]] })
-      hook << :flatten
-      hook.run(obj = Object.new).must_equal [[hook.last, obj]]
-    end
-    it "uses a plain object as a static scope" do
-      scope = Object.new
-      hook = Hooks::Hook.new(scope: scope)
-      hook << lambda { self }
-      hook.run(Object.new).must_equal [scope]
-    end
-    it "evaluates procs in their definition context if nil is returned" do
-      hook = Hooks::Hook.new(scope: lambda { |callback, scope| scope if !callback.proc? })
-      hook << lambda { self }
-      hook.run(Object.new).must_equal [self]
-    end
-  end
 end
 
 class ResultsTest < MiniTest::Spec
