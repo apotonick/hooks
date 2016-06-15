@@ -52,6 +52,7 @@ module Hooks
     end
 
     def run_hook_for(name, scope, *args)
+      throw "No hook defined with name #{name}" if _hooks[name].nil?
       _hooks[name].run(scope, *args)
     end
 
