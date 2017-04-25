@@ -33,14 +33,14 @@ Now you can add callbacks to your hook declaratively in your class.
     puts "Ice cream for #{self}!"
   end
 
-  after_dinner :have_a_desert   # => refers to Cat#have_a_desert
+  after_dinner :have_a_dessert   # => refers to Cat#have_a_dessert
 
-  def have_a_desert
+  def have_a_dessert
     puts "Hell, yeah!"
   end
 ```
 
-This will run the block and `#have_a_desert` from above.
+This will run the block and `#have_a_dessert` from above.
 
 ```ruby
 cat.run_hook :after_dinner
