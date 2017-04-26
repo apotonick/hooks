@@ -12,9 +12,9 @@ require "hooks/hook"
 #
 #     before_dinner :wash_paws
 #     after_dinner { puts "Ice cream!" }
-#     after_dinner :have_a_desert   # => refers to CatWidget#have_a_desert
+#     after_dinner :have_a_dessert   # => refers to CatWidget#have_a_dessert
 #
-# Running the callbacks happens on instances. It will run the block and #have_a_desert from above.
+# Running the callbacks happens on instances. It will run the block and #have_a_dessert from above.
 #
 #   cat.run_hook :after_dinner
 module Hooks
@@ -109,7 +109,7 @@ module Hooks
   #
   # will invoke the callbacks like
   #
-  #   desert("i want ice cream!")
+  #   dessert("i want ice cream!")
   #   block.call("i want ice cream!")
   def run_hook(name, *args)
     self.class.run_hook_for(name, self, *args)
