@@ -4,7 +4,7 @@
 
 ## 0.4.0
 
-* Same as 0.3.6 but we wanna indicate an internal change (using uber).
+STUPID CHANGE
 
 ## 0.3.6
 
