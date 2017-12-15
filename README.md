@@ -2,6 +2,7 @@
 
 _Generic hooks with callbacks for Ruby._
 
+[![Travis Build Status](https://travis-ci.org/apotonick/hooks.svg?branch=master)](https://travis-ci.org/apotonick/hooks)
 
 ## Introduction
 
