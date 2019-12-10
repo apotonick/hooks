@@ -23,7 +23,7 @@ module Hooks
       extend Uber::InheritableAttr
       extend ClassMethods
       inheritable_attr :_hooks
-      self._hooks= HookSet.new
+      self._hooks ||= HookSet.new
     end
   end
 
